@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alvaro Barbosa - Desenvolvedor Fullstack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis Globais */
+        :root {
+            --primary-color: #00ddeb;
+            --bg-color: #0d1b2a;
+            --text-color: #e0e7ff;
+            --secondary-text: #94a3b8;
+            --card-bg: #1e293b;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            opacity: 0;
+            animation: fadeInBody 1s ease forwards;
+            scroll-behavior: smooth;
+        }
+
+        @keyframes fadeInBody {
+            to { opacity: 1; }
+        }
+
+        /* Modal de Carregamento */
+        .loading-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            max-width: 450px;
+            width: 90%;
+            transform: scale(0.95);
+            animation: modalPop 0.5s ease forwards;
+        }
+
+        @keyframes modalPop {
+            to { transform: scale(1); }
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-content input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .modal-content button {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background: #38bdf8;
+            transform: translateY(-3px);
+        }
+
+        /* Popup de Boas-Vindas */
+        .welcome-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            z-index: 10000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .welcome-popup.active {
+            opacity: 1;
+        }
+
+        .welcome-popup h2 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .welcome-popup p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+        }
+
+        .welcome-popup button {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .welcome-popup button:hover {
+            background: #38bdf8;
+            transform: translateY(-3px);
+        }
+
+        /* Header */
+        header {
+            background: var(--card-bg);
+            padding: 3rem;
+            width: 90%;
+            max-width: 1100px;
+            text-align: center;
+            margin: 3rem auto 0;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideIn 0.8s ease 0.3s forwards;
+        }
+
+        @keyframes slideIn {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .profile-info h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-info p {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .contact-button {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-button:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            transform: translateY(-3px);
+        }
+
+        .contact-button img {
+            width: 22px;
+            height: 22px;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-button.clicked img {
+            transform: translateX(50px);
+        }
+
+        .contact-button.clicked span {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Marquee */
+        .marquee-container {
+            width: 90%;
+            max-width: 1100px;
+            overflow: hidden;
+            background: var(--card-bg);
+            padding: 1rem 0;
+            border-radius: 10px;
+            margin: 2rem auto;
+            box-shadow: var(--shadow-light);
+            opacity: 0;
+            animation: slideIn 0.8s ease 0.5s forwards;
+        }
+
+        .marquee-text {
+            white-space: nowrap;
+            color: var(--secondary-text);
+            font-size: 1rem;
+            font-weight: 400;
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Seção de Venda */
+        .selling-section {
+            background: var(--card-bg);
+            padding: 3rem;
+            width: 90%;
+            max-width: 1100px;
+            border-radius: 15px;
+            margin: 0 auto 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            box-shadow: var(--shadow-light);
+            opacity: 0;
+            animation: slideIn 0.8s ease 0.7s forwards;
+        }
+
+        .selling-card {
+            background: var(--bg-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardFadeIn 0.5s ease forwards;
+            animation-delay: calc(var(--order) * 0.15s);
+        }
+
+        @keyframes cardFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .selling-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .selling-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 3px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .selling-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .selling-card-text {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .selling-card-text h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .selling-card-text p {
+            color: var(--secondary-text);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        /* Botão Flutuante */
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .floating-button:hover {
+            background: #38bdf8;
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 0 6rem;
+            color: var(--secondary-text);
+            width: 100%;
+            font-size: 0.9rem;
+            position: relative;
+            opacity: 0;
+            animation: slideIn 0.8s ease 0.9s forwards;
+        }
+
+        #earth-container {
+            position: absolute;
+            bottom: -70px;
+            right: 30px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: var(--shadow-light);
+        }
+
+        #earth-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 50%;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            header, .selling-section {
+                padding: 2rem;
+            }
+
+            .contact-buttons {
+                gap: 1rem;
+            }
+
+            .selling-card img {
+                height: 180px;
+            }
+
+            #earth-container {
+                width: 120px;
+                height: 120px;
+                bottom: -60px;
+            }
+
+            .floating-button {
+                bottom: 15px;
+                left: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            header, .selling-section {
+                padding: 1.5rem;
+            }
+
+            .profile-info h1 {
+                font-size: 2.5rem;
+            }
+
+            .modal-content, .welcome-popup {
+                padding: 1.5rem;
+            }
+
+            .selling-card-text h3 {
+                font-size: 1.4rem;
+            }
+
+            #earth-container {
+                width: 100px;
+                height: 100px;
+                bottom: -50px;
+                right: 15px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- Modal de Carregamento -->
+    <div class="loading-modal" id="loadingModal">
+        <div class="modal-content">
+            <h2>Olá! Qual é o seu nome?</h2>
+            <input type="text" id="userName" placeholder="Digite seu nome" aria-label="Digite seu nome">
+            <button onclick="proceedToPage()">Entrar</button>
+        </div>
+    </div>
+
+    <!-- Popup de Boas-Vindas -->
+    <div class="welcome-popup" id="welcomePopup">
+        <h2 id="welcomeTitle">Bem-vindo(a)!</h2>
+        <p id="welcomeMessage">É um prazer te receber aqui!</p>
+        <button onclick="closeWelcomePopup()">Explorar o site</button>
+    </div>
+
+    <header>
+        <div class="profile-info">
+            <h1>Alvaro Gonçalves Barbosa</h1>
+            <p>Desenvolvedor Fullstack</p>
+            <p>25 anos | Cursando ADS</p>
+        </div>
+
+        <div class="contact-buttons">
+            <a href="https://www.instagram.com/alvarosdl09/" target="_blank" class="contact-button instagram" id="instagramButton">
+                <img src="instagram-icon.jpg" alt="Instagram">
+                <span>Instagram</span>
+            </a>
+            <a href="mailto:alvarosdl09@gmail.com" class="contact-button" id="emailButton">
+                <img src="email-icon.jpg" alt="Email">
+                <span>Email</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="marquee-container">
+        <span class="marquee-text" id="marqueeText">
+            * Ei! Quer uma página moderna e leve pro seu negócio? Precisa automatizar tarefas, criar sistemas personalizados ou explorar IA? Me chama no Insta ou email e bora transformar sua ideia em realidade! Preço justo, atendimento direto e suporte garantido. *
+        </span>
+    </div>
+
+    <section class="selling-section">
+        <div class="selling-card" style="--order: 1;">
+            <img src="sites-modern-image.jpg" alt="Sites modernos e rápidos">
+            <div class="selling-card-text">
+                <h3>Sites modernos e rápidos</h3>
+                <p>Crio páginas com visual profissional, responsivas e otimizadas para todos os dispositivos.</p>
+            </div>
+        </div>
+        <div class="selling-card" style="--order: 2;">
+            <img src="automation-image.jpg" alt="Automação de Tarefas">
+            <div class="selling-card-text">
+                <h3>Automação de Tarefas</h3>
+                <p>Simplifico sua rotina com bots e sistemas que eliminam o trabalho repetitivo.</p>
+            </div>
+        </div>
+        <div class="selling-card" style="--order: 3;">
+            <img src="ai-integration-image.jpg" alt="Integrações com IA">
+            <div class="selling-card-text">
+                <h3>Integrações com IA</h3>
+                <p>Adiciono IA ao seu projeto para atendimento, análise de dados ou automação inteligente.</p>
+            </div>
+        </div>
+        <div class="selling-card" style="--order: 4;">
+            <img src="custom-systems-image.jpg" alt="Sistemas sob medida">
+            <div class="selling-card-text">
+                <h3>Sistemas sob medida</h3>
+                <p>Desenvolvo soluções personalizadas com as funcionalidades que você precisa.</p>
+            </div>
+        </div>
+        <div class="selling-card" style="--order: 5;">
+            <img src="support-image.jpg" alt="Atualizações e Suporte">
+            <div class="selling-card-text">
+                <h3>Atualizações e Suporte</h3>
+                <p>Ofereço manutenção e melhorias contínuas para seu projeto sempre evoluir.</p>
+            </div>
+        </div>
+        <div class="selling-card" style="--order: 6;">
+            <img src="consulting-image.jpg" alt="Consultoria para Projetos">
+            <div class="selling-card-text">
+                <h3>Consultoria para Projetos</h3>
+                <p>Te ajudo a planejar e executar sua ideia com expertise técnica e prática.</p>
+            </div>
+        </div>
+    </section>
+
+    <button class="floating-button" onclick="scrollToTop()">↑</button>
+
+    <footer>
+        <p>© 2025 Alvaro Gonçalves Barbosa - Portfólio</p>
+        <div id="earth-container"></div>
+    </footer>
+
+    <script>
+        /* Função para prosseguir após inserir o nome */
+        function proceedToPage() {
+            const name = document.getElementById('userName').value.trim();
+            if (name) {
+                localStorage.setItem('userName', name);
+                const modal = document.getElementById('loadingModal');
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    showWelcomePopup(name);
+                }, 600);
+            } else {
+                alert('Por favor, digite seu nome!');
+            }
+        }
+
+        /* Função para exibir o popup de boas-vindas */
+        function showWelcomePopup(name) {
+            const popup = document.getElementById('welcomePopup');
+            const title = document.getElementById('welcomeTitle');
+            const message = document.getElementById('welcomeMessage');
+            title.textContent = `Bem-vindo(a), ${name}!`;
+            message.textContent = `É um prazer te receber no meu portfólio! Confira meus serviços e me chame para conversar.`;
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.classList.add('active');
+            }, 10);
+        }
+
+        /* Função para fechar o popup de boas-vindas */
+        function closeWelcomePopup() {
+            const popup = document.getElementById('welcomePopup');
+            popup.classList.remove('active');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 600);
+        }
+
+        /* Verifica se já tem nome salvo e pula o modal */
+        window.addEventListener('load', function() {
+            const savedName = localStorage.getItem('userName');
+            if (savedName) {
+                document.getElementById('loadingModal').style.display = 'none';
+                showWelcomePopup(savedName);
+            }
+        });
+
+        /* Animação dos botões de contato */
+        document.addEventListener('DOMContentLoaded', function() {
+            const instagramButton = document.getElementById('instagramButton');
+            const emailButton = document.getElementById('emailButton');
+
+            instagramButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    window.open(this.href, '_blank');
+                    this.classList.remove('clicked');
+                }, 300);
+            });
+
+            emailButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    window.location.href = this.href;
+                    this.classList.remove('clicked');
+                }, 300);
+            });
+        });
+
+        /* Animação do Texto em Movimento */
+        document.addEventListener('DOMContentLoaded', function() {
+            const marqueeText = document.getElementById('marqueeText');
+            let position = 0;
+
+            function animateMarquee() {
+                position -= 1.5;
+                marqueeText.style.transform = `translateX(${position}px)`;
+                if (position <= -marqueeText.offsetWidth) {
+                    position = window.innerWidth;
+                }
+                requestAnimationFrame(animateMarquee);
+            }
+            animateMarquee();
+        });
+
+        /* Função para voltar ao topo */
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* Animação da Terra (Three.js) */
+        document.addEventListener('DOMContentLoaded', function() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+
+            const container = document.getElementById('earth-container');
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+
+            const geometry = new THREE.SphereGeometry(1, 32, 32); // Reduzido de 64 para 32
+            const textureLoader = new THREE.TextureLoader();
+            const material = new THREE.MeshPhongMaterial({
+                map: textureLoader.load('assets/earth_texture.jpg'),
+                bumpMap: textureLoader.load('assets/earth_bump.jpg'),
+                bumpScale: 0.05
+            });
+            const earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+
+            camera.position.z = 2;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                earth.rotation.y += 0.005; // Reduzido de 0.007
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            function handleResize() {
+                const size = Math.min(container.clientWidth, container.clientHeight);
+                camera.aspect = 1;
+                camera.updateProjectionMatrix();
+                renderer.setSize(size, size);
+            }
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>
